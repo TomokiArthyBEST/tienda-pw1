@@ -45,6 +45,15 @@ function IsLoggedIn(req, res, next) {
 
 // --- 4. RUTAS ---
 
+app.get('/asignaciones', IsLoggedIn, (req, res) => {
+    // Aquí puedes hacer una consulta a tu base de datos si tienes una tabla de asignaciones
+    // Por ahora, solo renderizamos la vista
+    res.render('asignaciones', { 
+        user: req.session.user, 
+        paginaActiva: 'asignaciones' 
+    });
+});
+
 // Login
 app.get('/login', (req, res) => res.render('login', { error: null }));
 app.post('/login', (req, res) => {
