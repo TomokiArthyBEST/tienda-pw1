@@ -1,0 +1,45 @@
+<%- include('partials/header') %>
+<div class="container">
+    <h1>🛒 Registrar Venta</h1>
+    
+    <form action="/agregar-asignacion" method="POST" class="formulario-dark">
+        <div class="input-group">
+            <label>Código del Producto:</label>
+            <input type="number" name="codigo" placeholder="Ej: 1" required>
+        </div>
+        <div class="input-group">
+            <label>ID del Cliente:</label>
+            <input type="number" name="id_clientes" placeholder="Ej: 10" required>
+        </div>
+        <button type="submit" class="btn-guardar">Confirmar Compra</button>
+    </form>
+
+    <hr>
+
+ <a href="/descargar-ventas" class="btn-guardar" style="background: #ff5555; text-decoration: none; display: inline-block; margin-bottom: 10px;">
+    📄 Descargar Reporte PDF
+</a>
+
+    <h2>Historial de Ventas</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID Venta</th>
+                <th>Producto</th>
+                <th>Cliente</th>
+                <th>Apellido</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% asignaciones.forEach(venta => { %>
+                <tr>
+                    <td><%= venta.ID_PC %></td>
+                    <td><%= venta.PRODUCTO %></td>
+                    <td><%= venta.CLIENTE %></td>
+                    <td><%= venta.APELLIDO %></td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+</div>
+<%- include('partials/footer') %>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Inventario Pro</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏢 Gestión Integrada</h1>
+            <nav>
+                <a href="/" class="<%= paginaActiva === 'productos' ? 'active' : '' %>">📦 Productos</a>
+                <a href="/proveedores" class="<%= paginaActiva === 'proveedores' ? 'active' : '' %>">🚚 Prov</a>
+                <a href="/clientes" class="<%= paginaActiva === 'clientes' ? 'active' : '' %>">👥 Clientes</a>
+                <a href="/asignaciones" class="<%= paginaActiva === 'asignaciones' ? 'active' : '' %>">🤝 Ventas</a>
+            </nav>
+            <span style="color: #00ffcc; margin-left: 20px;">👤 Hola, <%= user %></span>
+<a href="/logout" style="color: #ff5555; margin-left: 10px; text-decoration: none;">[Salir]</a>
+        </header>

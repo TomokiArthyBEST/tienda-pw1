@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/css/style.css"> 
+    <title>Registro - Gestión Integrada</title>
+</head>
+<body style="display: flex; justify-content: center; align-items: center; height: 100vh; background: #0f0f1a; font-family: sans-serif;">
+    
+    <div class="formulario-dark" style="width: 350px; padding: 30px; border: 2px solid #00ffcc; border-radius: 15px; box-shadow: 0 0 15px #00ffcc55;">
+        <h2 style="text-align: center; color: #00ffcc; text-transform: uppercase; letter-spacing: 2px;">📝 Crear Usuario</h2>
+        
+        <form action="/registro" method="POST">
+            <div style="margin-bottom: 15px;">
+                <label style="color: #00ffcc; font-size: 12px; display: block; margin-bottom: 5px;">ELIGE UN NOMBRE DE USUARIO</label>
+                <input type="text" name="user_name" placeholder="Ej: TomokiArthy" required 
+                    style="width: 100%; padding: 10px; background: #1a1a2e; border: 1px solid #00ffcc; color: white; border-radius: 5px; box-sizing: border-box;">
+            </div>
+
+            <div style="margin-bottom: 20px;">
+    <label style="color: #00ffcc; font-size: 12px; display: block; margin-bottom: 5px;">CONTRASEÑA</label>
+    <input type="password" name="password" placeholder="Mínimo 6 caracteres" minlength="6" required 
+           style="width: 100%; padding: 10px; background: #1a1a2e; border: 1px solid #00ffcc; color: white; border-radius: 5px; box-sizing: border-box;">
+</div>
+
+            <button type="submit" style="width: 100%; padding: 12px; background: #00ffcc; border: none; color: #0f0f1a; font-weight: bold; cursor: pointer; border-radius: 5px; text-transform: uppercase;">
+                Finalizar Registro
+            </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 20px; border-top: 1px solid #333; padding-top: 15px;">
+            <a href="/login" style="color: #ccc; text-decoration: none; font-size: 0.85em;">¿Ya tienes cuenta? <span style="color: #00ffcc; font-weight: bold;">Inicia sesión</span></a>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,39 @@
+<%- include('partials/header') %>
+
+        <main>
+            <h2>Gestión de Proveedores</h2>
+            
+            <section class="add-section">
+                <h3>Añadir Nuevo Proveedor</h3>
+                <form action="/agregar-proveedor" method="POST">
+                    <input type="text" name="nif" placeholder="NIF (max 5 char)" required>
+                    <input type="text" name="nombre" placeholder="Nombre Proveedor" required>
+                    <input type="text" name="direccion" placeholder="Dirección" required>
+                    <button type="submit">Guardar Proveedor</button>
+                </form>
+            </section>
+            
+            <section class="list-section">
+                <h3>Proveedores Actuales</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>NIF</th><th>Nombre</th><th>Dirección</th><th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% proveedores.forEach(pv => { %>
+                            <tr>
+                                <td><%= pv.NIF %></td>
+                                <td><%= pv.NOMBRE %></td>
+                                <td><%= pv.DIRECCION %></td>
+                                <td><a href="/eliminar-proveedor/<%= pv.NIF %>" class="btn-delete">Eliminar</a></td>
+                            </tr>
+                        <% pv %>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,30 @@
+<%- include('partials/header') %>
+<main>
+    <h2>👥 Registro de Clientes</h2>
+    <form action="/agregar-cliente" method="POST">
+        <input type="number" name="id_clientes" placeholder="ID Cliente" required>
+        <input type="text" name="nombre" placeholder="Nombre" required>
+        <input type="text" name="apellido" placeholder="Apellido" required>
+        <input type="text" name="curp" placeholder="CURP (18 caracteres)" maxlength="18" required>
+        <input type="text" name="direccion" placeholder="Dirección">
+        <input type="date" name="fca_nac" required>
+        <button type="submit">Registrar Cliente</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr><th>ID</th><th>Nombre</th><th>CURP</th><th>Acciones</th></tr>
+        </thead>
+        <tbody>
+            <% clientes.forEach(c => { %>
+                <tr>
+                    <td><%= c.ID_CLIENTES %></td>
+                    <td><%= c.NOMBRE %> <%= c.APELLIDO %></td>
+                    <td><%= c.CURP %></td>
+                    <td><a href="/eliminar-cliente/<%= c.ID_CLIENTES %>" class="btn-delete">Eliminar</a></td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+</main>
+<%- include('partials/footer') %>

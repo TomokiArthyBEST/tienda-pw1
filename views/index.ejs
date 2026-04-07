@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="stylesheet" href="/style.css">
+    <title>Inventario Pro - Proveedores</title>
+</head>
+<body>
+    <div class="container">
+        <h1>📦 Gestión de Inventario</h1>
+        
+        <form action="/agregar" method="POST">
+            <input type="number" name="codigo" placeholder="ID Producto" required>
+            <input type="text" name="nombre" placeholder="Nombre Producto" required>
+            <input type="number" step="0.01" name="precio" placeholder="Precio" required>
+            <input type="text" name="nif" placeholder="NIF Prov (Ej: A100)" required>
+            <button type="submit">Añadir</button>
+        </form>
+
+        <hr>
+
+        <div style="margin-bottom: 15px;">
+            <input type="text" id="buscador" placeholder="🔍 Buscar producto o proveedor..." style="width: 100%; box-sizing: border-box;">
+        </div>
+
+        <table id="tablaProductos">
+            <thead>
+                <tr><th>ID</th><th>Producto</th><th>Precio</th><th>Proveedor</th><th>Acción</th></tr>
+            </thead>
+            <tbody>
+                <% productos.forEach(p => { %>
+                    <tr>
+                        <td><%= p.CODIGO %></td>
+                        <td><%= p.NOMBRE %></td>
+                        <td>$<%= p.PRECIO %></td>
+                        <td><%= p.PROVEEDOR %></td>
+                        <td><a href="/eliminar/<%= p.CODIGO %>" class="btn-delete" onclick="return confirm('¿Seguro?')">Borrar</a></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.getElementById('buscador').addEventListener('keyup', function() {
+            let filtro = this.value.toLowerCase();
+            let filas = document.querySelectorAll('#tablaProductos tbody tr');
+            
+            filas.forEach(fila => {
+                let texto = fila.textContent.toLowerCase();
+                fila.style.display = texto.includes(filtro) ? '' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>

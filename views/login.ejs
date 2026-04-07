@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/css/style.css"> 
+    <title>Login - Gestión Integrada</title>
+</head>
+<body style="display: flex; justify-content: center; align-items: center; height: 100vh; background: #0f0f1a; font-family: sans-serif;">
+    
+    <div class="formulario-dark" style="width: 320px; padding: 30px; border: 2px solid #00ffcc; border-radius: 15px; box-shadow: 0 0 15px #00ffcc55;">
+        <h2 style="text-align: center; color: #00ffcc; text-transform: uppercase; letter-spacing: 2px;">🔐 Acceso</h2>
+        
+        <% if (error) { %>
+            <div style="background: rgba(255, 85, 85, 0.2); border: 1px solid #ff5555; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+                <p style="color: #ff5555; font-size: 13px; text-align: center; margin: 0;"><%= error %></p>
+            </div>
+        <% } %>
+
+        <form action="/login" method="POST">
+            <div style="margin-bottom: 15px;">
+                <label style="color: #00ffcc; font-size: 12px; display: block; margin-bottom: 5px;">USUARIO</label>
+                <input type="text" name="user_name" placeholder="Tu usuario" required 
+                    style="width: 100%; padding: 10px; background: #1a1a2e; border: 1px solid #00ffcc; color: white; border-radius: 5px; box-sizing: border-box;">
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="color: #00ffcc; font-size: 12px; display: block; margin-bottom: 5px;">CONTRASEÑA</label>
+                <input type="password" name="password" placeholder="••••••••" required 
+                    style="width: 100%; padding: 10px; background: #1a1a2e; border: 1px solid #00ffcc; color: white; border-radius: 5px; box-sizing: border-box;">
+            </div>
+
+            <button type="submit" style="width: 100%; padding: 12px; background: #00ffcc; border: none; color: #0f0f1a; font-weight: bold; cursor: pointer; border-radius: 5px; text-transform: uppercase;">
+                Entrar al Sistema
+            </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 20px; border-top: 1px solid #333; padding-top: 15px;">
+            <p style="color: #ccc; font-size: 0.85em; margin: 0;">
+                ¿No tienes cuenta? <br>
+                <a href="/registro" style="color: #00ffcc; text-decoration: none; font-weight: bold; font-size: 1.1em;">CREAR UNA AQUÍ</a>
+            </p>
+        </div>
+    </div>
+
+</body>
+</html>
