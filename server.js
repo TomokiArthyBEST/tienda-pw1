@@ -157,7 +157,3 @@ app.get('/logout', (req, res) => {
 // --- 6. PUERTO PARA LA NUBE ---
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => console.log(`🚀 Servidor corriendo en puerto ${PORT}`));
-
-// --- 5. PUERTO PARA LA NUBE ---
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log(`🚀 Servidor corriendo en puerto ${PORT}`));
