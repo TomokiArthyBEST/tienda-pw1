@@ -25,14 +25,15 @@ const pool = mysql.createPool({
     database: process.env.MYSQL_ADDON_DB || 'btdjfvoltt1fngzt23uf',
     port: process.env.MYSQL_ADDON_PORT || 3306,
     waitForConnections: true,
-    connectionLimit: 10
+    connectionLimit: 10,
+    queueLimit: 0
 });
 
 pool.getConnection((err, conn) => {
     if (err) {
         console.error("❌ Error de conexión detallado:", err.message);
     } else {
-        console.log("✅ Conexión exitosa a la base de datos: btdjfvoltt1fngzt23uf");
+        console.log("✅ Conexión exitosa a la base de datos de Clever Cloud");
         conn.release();
     }
 });
@@ -43,25 +44,55 @@ function IsLoggedIn(req, res, next) {
     res.redirect('/login');
 }
 
-// --- 4. RUTAS ---
+// --- 4. RUTAS GET (VISTAS) ---
 
-app.get('/asignaciones', IsLoggedIn, (req, res) => {
-    // Aquí puedes hacer una consulta a tu base de datos si tienes una tabla de asignaciones
-    // Por ahora, solo renderizamos la vista
-    res.render('asignaciones', { 
-        user: req.session.user, 
-        paginaActiva: 'asignaciones' 
+// Login y Registro
+app.get('/login', (req, res) => res.render('login', { error: null }));
+app.get('/registro', (req, res) => res.render('registro', { error: null }));
+
+// Productos (Página Principal)
+app.get('/', IsLoggedIn, (req, res) => {
+    const sqlProd = "SELECT p.*, pr.NOMBRE AS PROVEEDOR FROM productos p LEFT JOIN proveedores pr ON p.NIF = pr.NIF";
+    const sqlTotal = "SELECT SUM(STOCK) AS total FROM productos";
+    pool.query(sqlProd, (err, lista) => {
+        if (err) return res.send("Error en productos: " + err.message);
+        pool.query(sqlTotal, (err, resTotal) => {
+            const total = (resTotal[0] && resTotal[0].total) ? resTotal[0].total : 0;
+            res.render('productos', { productos: lista || [], totalProductos: total, user: req.session.user, paginaActiva: 'productos' });
+        });
     });
 });
 
-// Login
-app.get('/login', (req, res) => res.render('login', { error: null }));
+app.get('/proveedores', IsLoggedIn, (req, res) => {
+    pool.query("SELECT * FROM proveedores", (err, results) => {
+        if (err) return res.send("Error en proveedores: " + err.message);
+        res.render('proveedores', { proveedores: results || [], user: req.session.user, paginaActiva: 'proveedores' });
+    });
+});
+
+app.get('/clientes', IsLoggedIn, (req, res) => {
+    pool.query("SELECT * FROM clientes", (err, results) => {
+        if (err) return res.send("Error en clientes: " + err.message);
+        res.render('clientes', { clientes: results || [], user: req.session.user, paginaActiva: 'clientes' });
+    });
+});
+
+app.get('/asignaciones', IsLoggedIn, (req, res) => {
+    const sql = `SELECT pc.ID_PC, p.NOMBRE AS PRODUCTO, c.NOMBRE AS CLIENTE, c.APELLIDO 
+                 FROM producto_clientes pc 
+                 JOIN productos p ON pc.CODIGO = p.CODIGO 
+                 JOIN clientes c ON pc.ID_CLIENTES = c.ID_CLIENTES`;
+    pool.query(sql, (err, results) => {
+        res.render('asignaciones', { asignaciones: results || [], user: req.session.user, paginaActiva: 'asignaciones' });
+    });
+});
+
+// --- 5. RUTAS POST (RECEPCIÓN DE FORMULARIOS) ---
+
 app.post('/login', (req, res) => {
     const { user_name, password } = req.body;
-    // IMPORTANTE: Asegúrate de que las columnas en Clever Cloud se llamen exactamente USER_NAME y PASSWORD
     pool.query("SELECT * FROM usuarios WHERE USER_NAME = ? AND PASSWORD = ?", [user_name, password], (err, results) => {
-        if (err) return res.send("Error en la consulta de login: " + err.message);
-        
+        if (err) return res.send("Error en login: " + err.message);
         if (results && results.length > 0) {
             req.session.user = results[0].USER_NAME;
             res.redirect('/');
@@ -71,57 +102,50 @@ app.post('/login', (req, res) => {
     });
 });
 
-// Registro
-app.get('/registro', (req, res) => res.render('registro', { error: null }));
 app.post('/registro', (req, res) => {
     const { user_name, password } = req.body;
-    
-    // Agregué un log para que veas en la consola de Render qué está intentando insertar
-    console.log(`Intentando registrar usuario: ${user_name}`);
-
     pool.query("INSERT INTO usuarios (USER_NAME, PASSWORD) VALUES (?, ?)", [user_name, password], (err) => {
-        if (err) {
-            console.error("Error al insertar:", err.message);
-            return res.send("Error al crear cuenta: " + err.message);
-        }
+        if (err) return res.send("Error al crear cuenta: " + err.message);
         res.redirect('/login');
     });
 });
 
-// Vistas Principales (Productos)
-app.get('/', IsLoggedIn, (req, res) => {
-    const sqlProd = "SELECT p.*, pr.NOMBRE AS PROVEEDOR FROM productos p LEFT JOIN proveedores pr ON p.NIF = pr.NIF";
-    const sqlTotal = "SELECT SUM(STOCK) AS total FROM productos";
+// 🚀 AQUÍ ESTÁN LAS RUTAS QUE TE FALTABAN PARA QUITAR EL "CANNOT POST"
+app.post('/agregar-producto', IsLoggedIn, (req, res) => {
+    const { codigo, nombre, precio, stock, nif } = req.body;
+    const sql = "INSERT INTO productos (CODIGO, NOMBRE, PRECIO, STOCK, NIF) VALUES (?, ?, ?, ?, ?)";
+    pool.query(sql, [codigo, nombre, precio, stock, nif], (err) => {
+        if (err) return res.send("Error al insertar producto: " + err.message);
+        res.redirect('/');
+    });
+});
 
-    pool.query(sqlProd, (err, lista) => {
-        if (err) return res.send("Error en productos: " + err.message);
+app.post('/agregar-cliente', IsLoggedIn, (req, res) => {
+    const { id_clientes, nombre, apellido, curp, direccion, fca_nac } = req.body;
+    const sql = "INSERT INTO clientes (ID_CLIENTES, NOMBRE, APELLIDO, CURP, DIRECCION, FCA_NAC) VALUES (?, ?, ?, ?, ?, ?)";
+    pool.query(sql, [id_clientes, nombre, apellido, curp, direccion, fca_nac], (err) => {
+        if (err) return res.send("Error al insertar cliente: " + err.message);
+        res.redirect('/clientes');
+    });
+});
 
-        pool.query(sqlTotal, (err, resTotal) => {
-            const total = (resTotal[0] && resTotal[0].total) ? resTotal[0].total : 0;
-            
-            res.render('productos', { 
-                productos: lista || [], 
-                totalProductos: total, 
-                user: req.session.user, 
-                paginaActiva: 'productos' 
-            });
+app.post('/agregar-proveedor', IsLoggedIn, (req, res) => {
+    const { nif, nombre, direccion } = req.body;
+    const sql = "INSERT INTO proveedores (NIF, NOMBRE, DIRECCION) VALUES (?, ?, ?)";
+    pool.query(sql, [nif, nombre, direccion], (err) => {
+        if (err) return res.send("Error al insertar proveedor: " + err.message);
+        res.redirect('/proveedores');
+    });
+});
+
+app.post('/agregar-asignacion', IsLoggedIn, (req, res) => {
+    const { codigo, id_clientes } = req.body;
+    pool.query("INSERT INTO producto_clientes (CODIGO, ID_CLIENTES) VALUES (?, ?)", [codigo, id_clientes], (err) => {
+        if (err) return res.send("Error en asignación: " + err.message);
+        // Opcional: Descontar del stock
+        pool.query("UPDATE productos SET STOCK = STOCK - 1 WHERE CODIGO = ?", [codigo], () => {
+            res.redirect('/asignaciones');
         });
-    });
-});
-
-// Proveedores
-app.get('/proveedores', IsLoggedIn, (req, res) => {
-    pool.query("SELECT * FROM proveedores", (err, results) => {
-        if (err) return res.send("Error en proveedores: " + err.message);
-        res.render('proveedores', { proveedores: results || [], user: req.session.user, paginaActiva: 'proveedores' });
-    });
-});
-
-// Clientes
-app.get('/clientes', IsLoggedIn, (req, res) => {
-    pool.query("SELECT * FROM clientes", (err, results) => {
-        if (err) return res.send("Error en clientes: " + err.message);
-        res.render('clientes', { clientes: results || [], user: req.session.user, paginaActiva: 'clientes' });
     });
 });
 
@@ -129,6 +153,10 @@ app.get('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/login');
 });
+
+// --- 6. PUERTO PARA LA NUBE ---
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => console.log(`🚀 Servidor corriendo en puerto ${PORT}`));
 
 // --- 5. PUERTO PARA LA NUBE ---
 const PORT = process.env.PORT || 8080;
