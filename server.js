@@ -87,6 +87,21 @@ app.get('/asignaciones', IsLoggedIn, (req, res) => {
     });
 });
 
+// 🗑️ RUTA PARA ELIMINAR PRODUCTO
+app.get('/eliminar-producto/:codigo', IsLoggedIn, (req, res) => {
+    const codigo = req.params.codigo;
+    const sql = "DELETE FROM productos WHERE CODIGO = ?";
+    
+    pool.query(sql, [codigo], (err, result) => {
+        if (err) {
+            console.error("Error al eliminar producto:", err.message);
+            return res.send("❌ Error al eliminar: " + err.message);
+        }
+        console.log(`✅ Producto ${codigo} eliminado con éxito`);
+        res.redirect('/'); // Te regresa a la lista de productos
+    });
+});
+
 // --- 5. RUTAS POST (RECEPCIÓN DE FORMULARIOS) ---
 
 app.post('/login', (req, res) => {
